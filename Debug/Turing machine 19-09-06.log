@@ -1,0 +1,26 @@
+﻿  Turing machine 19-09-06.cpp
+C:\Users\Tomas\source\repos\Turing machine 19-09-06\Turing machine 19-09-06\Turing machine 19-09-06.cpp(27,11): warning C4244:  'initializing': conversion from '__int64' to 'int', possible loss of data
+C:\Users\Tomas\source\repos\Turing machine 19-09-06\Turing machine 19-09-06\Turing machine 19-09-06.cpp(31,16): warning C4244:  'argument': conversion from '__int64' to 'const unsigned int', possible loss of data
+C:\Users\Tomas\source\repos\Turing machine 19-09-06\Turing machine 19-09-06\Turing machine 19-09-06.cpp(40,16): warning C4244:  'argument': conversion from '__int64' to 'const unsigned int', possible loss of data
+C:\Users\Tomas\source\repos\Turing machine 19-09-06\Turing machine 19-09-06\Turing machine 19-09-06.cpp(57,12): warning C4244:  'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+C:\Users\Tomas\source\repos\Turing machine 19-09-06\Turing machine 19-09-06\Turing machine 19-09-06.cpp(71,16): warning C4244:  'argument': conversion from '__int64' to 'const unsigned int', possible loss of data
+C:\Users\Tomas\source\repos\Turing machine 19-09-06\Turing machine 19-09-06\Turing machine 19-09-06.cpp(71,41): warning C4244:  'argument': conversion from '__int64' to 'const unsigned int', possible loss of data
+C:\Users\Tomas\source\repos\Turing machine 19-09-06\Turing machine 19-09-06\Turing machine 19-09-06.cpp(71,66): warning C4244:  'argument': conversion from '__int64' to 'const unsigned int', possible loss of data
+C:\Users\Tomas\source\repos\Turing machine 19-09-06\Turing machine 19-09-06\Turing machine 19-09-06.cpp(71,87): warning C4244:  'argument': conversion from '__int64' to 'const unsigned int', possible loss of data
+C:\Users\Tomas\source\repos\Turing machine 19-09-06\Turing machine 19-09-06\Turing machine 19-09-06.cpp(72,10): warning C4244:  'argument': conversion from '__int64' to 'const unsigned int', possible loss of data
+C:\Users\Tomas\source\repos\Turing machine 19-09-06\Turing machine 19-09-06\Turing machine 19-09-06.cpp(73,14): warning C4244:  'argument': conversion from '__int64' to 'const unsigned int', possible loss of data
+C:\Users\Tomas\source\repos\Turing machine 19-09-06\Turing machine 19-09-06\Turing machine 19-09-06.cpp(75,11): warning C4244:  'argument': conversion from '__int64' to 'const unsigned int', possible loss of data
+C:\Users\Tomas\source\repos\Turing machine 19-09-06\Turing machine 19-09-06\Turing machine 19-09-06.cpp(77,38): warning C4244:  'argument': conversion from '__int64' to 'const unsigned int', possible loss of data
+C:\Users\Tomas\source\repos\Turing machine 19-09-06\Turing machine 19-09-06\Turing machine 19-09-06.cpp(79,11): warning C4244:  'argument': conversion from '__int64' to 'const unsigned int', possible loss of data
+C:\Users\Tomas\source\repos\Turing machine 19-09-06\Turing machine 19-09-06\Turing machine 19-09-06.cpp(79,41): warning C4244:  'argument': conversion from '__int64' to 'const unsigned int', possible loss of data
+C:\Users\Tomas\source\repos\Turing machine 19-09-06\Turing machine 19-09-06\Turing machine 19-09-06.cpp(81,24): warning C4244:  'argument': conversion from '__int64' to 'const unsigned int', possible loss of data
+C:\Users\Tomas\source\repos\Turing machine 19-09-06\Turing machine 19-09-06\Turing machine 19-09-06.cpp(89,12): warning C4244:  'argument': conversion from '__int64' to 'const unsigned int', possible loss of data
+C:\Users\Tomas\source\repos\Turing machine 19-09-06\Turing machine 19-09-06\Turing machine 19-09-06.cpp(90,35): warning C4244:  'argument': conversion from '__int64' to 'int', possible loss of data
+C:\Users\Tomas\source\repos\Turing machine 19-09-06\Turing machine 19-09-06\Turing machine 19-09-06.cpp(97,20): warning C4244:  'argument': conversion from '__int64' to 'const unsigned int', possible loss of data
+C:\Users\Tomas\source\repos\Turing machine 19-09-06\Turing machine 19-09-06\Turing machine 19-09-06.cpp(102,18): warning C4244:  'argument': conversion from '__int64' to 'const unsigned int', possible loss of data
+C:\Users\Tomas\source\repos\Turing machine 19-09-06\Turing machine 19-09-06\Turing machine 19-09-06.cpp(102,45): warning C4244:  'argument': conversion from '__int64' to 'const unsigned int', possible loss of data
+C:\Users\Tomas\source\repos\Turing machine 19-09-06\Turing machine 19-09-06\Turing machine 19-09-06.cpp(102,77): warning C4244:  'argument': conversion from '__int64' to 'const unsigned int', possible loss of data
+C:\Users\Tomas\source\repos\Turing machine 19-09-06\Turing machine 19-09-06\Turing machine 19-09-06.cpp(102,109): warning C4244:  'argument': conversion from '__int64' to 'const unsigned int', possible loss of data
+C:\Users\Tomas\source\repos\Turing machine 19-09-06\Turing machine 19-09-06\Turing machine 19-09-06.cpp(102,137): warning C4244:  'argument': conversion from '__int64' to 'const unsigned int', possible loss of data
+C:\Users\Tomas\source\repos\Turing machine 19-09-06\Turing machine 19-09-06\Turing machine 19-09-06.cpp(107,18): warning C4244:  'argument': conversion from '__int64' to 'const unsigned int', possible loss of data
+  Turing machine 19-09-06.vcxproj -> C:\Users\Tomas\source\repos\Turing machine 19-09-06\Debug\Turing machine 19-09-06.exe
