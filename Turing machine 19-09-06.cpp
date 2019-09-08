@@ -9,30 +9,37 @@
 #include <string>
 #include <chrono>
 #include <thread>
+#include <algorithm>
+//NE VISADA VEIKIA , NES BUSENOS NE IS EILES BUNA, REIK SURIKIUOT
+
+
 
 using namespace std;
 using namespace std::this_thread;     // sleep_for, sleep_until
 using namespace std::chrono_literals; // ns, us, ms, s, h, etc.
 using std::chrono::system_clock;
 
-void print(string zymejimas, string juosta, string failas, int pozicija){
+
+
+void print(int i, string zymejimas, string juosta, string failas, int pozicija){
 	system("cls");
 	cout << "Failas:" << failas << endl;
-	cout << pozicija << endl;
+	cout <<"pozicija: " << pozicija <<" "<<juosta[pozicija] << endl;
+	cout << "komanda: " << i << endl;
 	cout << juosta << endl;
 	cout << zymejimas<<endl;
-	sleep_for(0.5s);
+	sleep_for(0.01s);
 }
-void judejimas(string kryptis, string &juosta, string &zymejimas, long long &pozicija) {
+void judejimas(char kryptis, string &juosta, string &zymejimas, long long &pozicija) {
 	int back = pozicija;
-		if (kryptis == "R")
+		if (kryptis == 'R')
 				{
 					pozicija++;
 					zymejimas[pozicija] = '^';
 
 					zymejimas[back] = '_';
 					cout << zymejimas << endl;
-					sleep_for(0.5s);
+					sleep_for(0.01s);
 				}
 				else
 				{
@@ -40,17 +47,26 @@ void judejimas(string kryptis, string &juosta, string &zymejimas, long long &poz
 					zymejimas[pozicija] = '^';
 					zymejimas[back] = '_';
 					cout << zymejimas << endl;
-					sleep_for(0.5s);
+					sleep_for(0.01s);
 				}
 }
+/*void keitimas(string &juosta, vector<komandos> eilute, int &i, long long &pozicija) 
+{
+}
+}*/
 struct komandos {
 	int pradzia_busenos = 0;
+	int galas_busenos = 0;
 	int busena = 0;
-	string esamas_simb;
-	string naujas_simb;
-	string kryptis;
-	int nauja_busena;
+	char esamas_simb;
+	char naujas_simb;
+	char kryptis;
+	string nauja_busena;
 };
+
+void struct_print(komandos eilute) {
+	cout << eilute.busena << " " << eilute.esamas_simb << " " << eilute.naujas_simb << " " << eilute.kryptis << " " << eilute.nauja_busena << endl;
+}
 int main() {
 	vector<komandos> eilute;
 	string zymejimas = "";
@@ -64,12 +80,32 @@ int main() {
 
 	ifstream rf(failas);
 	rf >> pozicija;
+	pozicija;
 	rf >> juosta;
-	while (rf >> a) //Nuskaito komandas, isimena busenu pradzios koordinates
+	while (rf >> a) //Nuskaito komandas
 	{
 		eilute.push_back(komandos());
 		rf >> eilute[i].esamas_simb >> eilute[i].naujas_simb >> eilute[i].kryptis >> eilute[i].nauja_busena;
 		eilute[i].busena = a;
+		i++;	
+	}
+	for (i = 0; i < eilute.size() - 1; i++)
+	{
+		for (int j = i + 1; j < eilute.size(); j++)
+		{
+			if (eilute[i].busena > eilute[j].busena)  //surikiuoja
+			{
+				komandos x;
+				x = eilute[i];
+				eilute[i] = eilute[j];
+				eilute[j] = x;
+
+			}
+		}
+	}
+	//----------------------------------------------------------------//
+	for (i = 0; i < eilute.size(); i++)
+	{
 		if (eilute[i].busena != past_busena) //nustato naujos busenos eilutes pradine pozicija
 		{
 			eilute[i].pradzia_busenos = busenos_vieta;
@@ -79,32 +115,105 @@ int main() {
 			eilute[i].pradzia_busenos = eilute[i - 1].pradzia_busenos;
 		}
 		past_busena = eilute[i].busena;
-		i++;
 		busenos_vieta++;
-		
 	}
-	//----------------------------------------------------------------//
+	
+	for (i = 0; i < eilute.size()-1; i++)
+	{
+		if(eilute[i].pradzia_busenos!=eilute[i+1].pradzia_busenos)
+		{
+			eilute[i].galas_busenos = eilute[i + 1].pradzia_busenos-1; 
+			int j = i-1;
+			while (eilute[j].galas_busenos == 0)
+			{
+				eilute[j].galas_busenos = eilute[i].galas_busenos;
+				if (j == 0)
+					break;
+				j--;
+			}
+		}
+	}
+	for (i = 0; i < eilute.size(); i++)
+	{
+		if (eilute[i].galas_busenos == 0)
+			eilute[i].galas_busenos = eilute.size() - 1;
+	}
 	for (i = 0; i < juosta.length(); i++)
 		zymejimas += "_";
 	zymejimas[pozicija] = '^';
-	print(zymejimas, juosta, failas, pozicija);
+
+
+	print(i, zymejimas, juosta, failas, pozicija);
 
 
 	//_______________Vykdymas__________________________//
+	i = 0;
 
-	for (i = 0; i < eilute.size(); i++)
+
+	while (eilute[i].nauja_busena != "X")
 	{
-		judejimas(eilute[i].kryptis, juosta, zymejimas, pozicija);
+		int nauja_busena = stoi(eilute[i].nauja_busena);
+		if (eilute[i].esamas_simb == juosta[pozicija]) //Kai esamas simbolis sutampa su juosteles simboliu
+		{
+			if (eilute[i].esamas_simb != eilute[i].naujas_simb)  //Kai esamas simbolis nesutampa su nauju
+			{
+				juosta[pozicija] = eilute[i].naujas_simb;			
+				judejimas(eilute[i].kryptis, juosta, zymejimas, pozicija);
+				print(i, zymejimas, juosta, failas, pozicija);
+				struct_print(eilute[i]);
+				if (eilute[i].busena != nauja_busena)    //Kai yra nauja busena
+						{
+							for (int j = 0; j < eilute.size(); j++)
+							{
+								if (eilute[j].busena == nauja_busena)
+									i = eilute[j].pradzia_busenos;
+							}
+						}
+			}
+
+			else  //Kai esamas simbolis sutampa su nauju
+			{
+			judejimas(eilute[i].kryptis, juosta, zymejimas, pozicija);
+			if (eilute[i].busena != nauja_busena)
+			{
+				for (int j = 0; j < eilute.size(); j++)
+				{
+					if (eilute[j].busena == nauja_busena)
+						i = eilute[j].pradzia_busenos;
+				}
+			}
+			}	
+		}
+		else if (eilute[i].esamas_simb != juosta[pozicija]) //Kai esamas simbolis nesutampa su juosteles simboliu
+			{
+				if (eilute[i].galas_busenos == i)
+					{
+						i = eilute[i].pradzia_busenos;
+					}
+				else {
+					i++;
+					cout << "iesko" << endl;
+				}
+			}
+		//__________________vvv___Print___vvv________________________________________//
+		print(i, zymejimas, juosta, failas, pozicija);
+		struct_print(eilute[i]);
 	}
+	
 	//_____________________________________________________________________________//
 	for (i = 0; i < eilute.size(); i++)
 	{
-		cout << eilute[i].busena << " " << eilute[i].esamas_simb << " " << eilute[i].naujas_simb << " " << eilute[i].kryptis << " " << eilute[i].nauja_busena << endl;
+		struct_print(eilute[i]);
 	}
-	cout << "Busenos pradziu koord: ";
+	cout << "Busenos pradziu koord: "<<endl;
 	for (i = 0; i < eilute.size(); i++)
 	{
 		cout << eilute[i].pradzia_busenos << ", ";
+	}
+	cout << "Busenos galu koord: "<<endl;
+	for (i = 0; i < eilute.size(); i++)
+	{
+		cout << eilute[i].galas_busenos << ", ";
 	}
 	//main(); grizta atgal programa i pradzia
 }
