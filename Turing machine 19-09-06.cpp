@@ -10,7 +10,6 @@
 #include <chrono>
 #include <thread>
 #include <algorithm>
-//NE VISADA VEIKIA , NES BUSENOS NE IS EILES BUNA, REIK SURIKIUOT
 
 
 
@@ -28,7 +27,7 @@ void print(int i, string zymejimas, string juosta, string failas, int pozicija){
 	cout << "komanda: " << i << endl;
 	cout << juosta << endl;
 	cout << zymejimas<<endl;
-	sleep_for(0.01s);
+	//sleep_for(0.01s);
 }
 void judejimas(char kryptis, string &juosta, string &zymejimas, long long &pozicija) {
 	int back = pozicija;
@@ -39,7 +38,7 @@ void judejimas(char kryptis, string &juosta, string &zymejimas, long long &pozic
 
 					zymejimas[back] = '_';
 					cout << zymejimas << endl;
-					sleep_for(0.01s);
+					//sleep_for(0.01s);
 				}
 				else
 				{
@@ -47,7 +46,7 @@ void judejimas(char kryptis, string &juosta, string &zymejimas, long long &pozic
 					zymejimas[pozicija] = '^';
 					zymejimas[back] = '_';
 					cout << zymejimas << endl;
-					sleep_for(0.01s);
+					//sleep_for(0.01s);
 				}
 }
 /*void keitimas(string &juosta, vector<komandos> eilute, int &i, long long &pozicija) 
@@ -67,6 +66,12 @@ struct komandos {
 void struct_print(komandos eilute) {
 	cout << eilute.busena << " " << eilute.esamas_simb << " " << eilute.naujas_simb << " " << eilute.kryptis << " " << eilute.nauja_busena << endl;
 }
+
+string random_file() {
+	int skaicius = rand() % 4 + 1;
+	string failas = to_string(skaicius) + ".txt";
+	return failas;
+}
 int main() {
 	vector<komandos> eilute;
 	string zymejimas = "";
@@ -74,7 +79,7 @@ int main() {
 	int a, busenos_vieta(0), past_busena(0);
 	long long i(0), pozicija(0);
 	string juosta; //pvz 00000000000000000000000*0000
-	string failas = "4.txt";
+	string failas = "2.txt";
 	//_______________________^kintamieji^_____________v skaitymas v______________________________//
 
 
