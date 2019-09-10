@@ -10,7 +10,7 @@
 #include <chrono>
 #include <thread>
 #include <algorithm>
-
+#include <exception>
 
 
 using namespace std;
@@ -34,25 +34,32 @@ void judejimas(char kryptis, string &juosta, string &zymejimas, long long &pozic
 		if (kryptis == 'R')
 				{
 					pozicija++;
+					if (pozicija < 0 || pozicija >= juosta.length())
+					{
+						cout << "Juosta baigesi//End of tape" << endl;
+						exit(0);
+					}
 					zymejimas[pozicija] = '^';
-
 					zymejimas[back] = '_';
-					cout << zymejimas << endl;
+					//cout << zymejimas << endl;
 					//sleep_for(0.01s);
 				}
 				else
 				{
 					pozicija--;
+					if (pozicija < 0 || pozicija >= juosta.length())
+					{
+						cout << "Juosta baigesi//End of tape" << endl;
+						exit(0);
+					}
 					zymejimas[pozicija] = '^';
 					zymejimas[back] = '_';
-					cout << zymejimas << endl;
+					//cout << zymejimas << endl;
 					//sleep_for(0.01s);
 				}
+
 }
-/*void keitimas(string &juosta, vector<komandos> eilute, int &i, long long &pozicija) 
-{
-}
-}*/
+
 struct komandos {
 	int pradzia_busenos = 0;
 	int galas_busenos = 0;
@@ -164,6 +171,11 @@ int main() {
 			{
 				juosta[pozicija] = eilute[i].naujas_simb;			
 				judejimas(eilute[i].kryptis, juosta, zymejimas, pozicija);
+				if (pozicija < 0 || pozicija >= juosta.length())
+				{
+					cout << "Juosta baigesi//End of tape" << endl;
+					return 0;
+				}
 				print(i, zymejimas, juosta, failas, pozicija);
 				struct_print(eilute[i]);
 				if (eilute[i].busena != nauja_busena)    //Kai yra nauja busena
@@ -179,6 +191,11 @@ int main() {
 			else  //Kai esamas simbolis sutampa su nauju
 			{
 			judejimas(eilute[i].kryptis, juosta, zymejimas, pozicija);
+			if (pozicija < 0 || pozicija >= juosta.length())
+			{
+				cout << "Juosta baigesi//End of tape" << endl;
+				return 0;
+			}
 			if (eilute[i].busena != nauja_busena)
 			{
 				for (int j = 0; j < eilute.size(); j++)
