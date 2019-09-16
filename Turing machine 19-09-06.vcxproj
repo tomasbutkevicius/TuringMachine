@@ -153,6 +153,9 @@
   <ItemGroup>
     <ClCompile Include="Turing machine 19-09-06.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="judejimas.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

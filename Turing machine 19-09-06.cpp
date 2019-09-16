@@ -10,57 +10,68 @@
 #include <chrono>
 #include <thread>
 #include <algorithm>
-#include <exception>
-
-
+#include <condition_variable>
+#include <mutex> //lock() unlock()
+#include <future>
+#include "judejimas.h"
 using namespace std;
 using namespace std::this_thread;     // sleep_for, sleep_until
 using namespace std::chrono_literals; // ns, us, ms, s, h, etc.
 using std::chrono::system_clock;
+mutex m;
+#define THREADSTREAM
+
+#include <iostream>
+#include <sstream>
+#include <mutex>
 
 
+#define NOMINMAX
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
 
-void print(int i, string zymejimas, string juosta, string failas, int pozicija){
-	system("cls");
-	cout << "Failas:" << failas << endl;
-	cout <<"pozicija: " << pozicija <<" "<<juosta[pozicija] << endl;
-	cout << "komanda: " << i << endl;
-	cout << juosta << endl;
-	cout << zymejimas<<endl;
-	//sleep_for(0.01s);
+	void cls()
+{
+	// Get the Win32 handle representing standard output.
+	// This generally only has to be done once, so we make it static.
+	static const HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	COORD topLeft = { 0, 0 };
+
+	// std::cout uses a buffer to batch writes to the underlying console.
+	// We need to flush that to the console because we're circumventing
+	// std::cout entirely; after we clear the console, we don't want
+	// stale buffered text to randomly be written out.
+	std::cout.flush();
+
+	// Figure out the current width and height of the console window
+	if (!GetConsoleScreenBufferInfo(hOut, &csbi)) {
+		// TODO: Handle failure!
+		abort();
+	}
+	DWORD length = csbi.dwSize.X * csbi.dwSize.Y;
+
+	DWORD written;
+
+	// Flood-fill the console with spaces to clear it
+	FillConsoleOutputCharacter(hOut, TEXT(' '), length, topLeft, &written);
+
+	// Reset the attributes of every character to the default.
+	// This clears all background colour formatting, if any.
+	FillConsoleOutputAttribute(hOut, csbi.wAttributes, length, topLeft, &written);
+
+	// Move the cursor back to the top left for the next sequence of writes
+	SetConsoleCursorPosition(hOut, topLeft);
 }
-void judejimas(char kryptis, string &juosta, string &zymejimas, long long &pozicija) {
-	int back = pozicija;
-		if (kryptis == 'R')
-				{
-					pozicija++;
-					if (pozicija < 0 || pozicija >= juosta.length())
-					{
-						cout << "Juosta baigesi//End of tape" << endl;
-						exit(0);
-					}
-					zymejimas[pozicija] = '^';
-					zymejimas[back] = '_';
-					//cout << zymejimas << endl;
-					//sleep_for(0.01s);
-				}
-				else
-				{
-					pozicija--;
-					if (pozicija < 0 || pozicija >= juosta.length())
-					{
-						cout << "Juosta baigesi//End of tape" << endl;
-						exit(0);
-					}
-					zymejimas[pozicija] = '^';
-					zymejimas[back] = '_';
-					//cout << zymejimas << endl;
-					//sleep_for(0.01s);
-				}
-
-}
-
-struct komandos {
+	void setCursorPosition(int x, int y)
+	{
+		static const HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+		std::cout.flush();
+		COORD coord = { (SHORT)x, (SHORT)y };
+		SetConsoleCursorPosition(hOut, coord);
+	}
+	struct komandos {
 	int pradzia_busenos = 0;
 	int galas_busenos = 0;
 	int busena = 0;
@@ -69,7 +80,6 @@ struct komandos {
 	char kryptis;
 	string nauja_busena;
 };
-
 void struct_print(komandos eilute) {
 	cout << eilute.busena << " " << eilute.esamas_simb << " " << eilute.naujas_simb << " " << eilute.kryptis << " " << eilute.nauja_busena << endl;
 }
@@ -79,18 +89,46 @@ string random_file() {
 	string failas = to_string(skaicius) + ".txt";
 	return failas;
 }
-int main() {
+void print(int i, string zymejimas, string juosta, string failas, int pozicija, int spausdint_x, int spausdint_y) {
+	m.lock();
+	setCursorPosition(0, spausdint_y);
+	if (juosta == "end_of_tape")
+		cout << juosta;
+	else {
+		setCursorPosition(spausdint_x, spausdint_y -1);
+		cout << failas << endl;
+		setCursorPosition(spausdint_x, spausdint_y);
+		cout << juosta <<endl;
+		setCursorPosition(spausdint_x, spausdint_y+1);
+		cout << zymejimas <<endl;
+		//cout.sync_with_stdio();
+		//cout << "Failas:" << failas << endl;
+		//cout << "pozicija: " << pozicija << " " << juosta[pozicija] << endl;
+		//cout << "komanda: " << i << endl;
+	}
+	m.unlock();
+	sleep_for(0.05s);
+}
+void vykdymas(string failas, int spausdint_x, int spausdint_y) {
+	
 	vector<komandos> eilute;
 	string zymejimas = "";
 	srand(time(NULL));
-	int a, busenos_vieta(0), past_busena(0);
+	int a(0), busenos_vieta(0), past_busena(0);
 	long long i(0), pozicija(0);
+	//input:
+	int get_file(1);
 	string juosta; //pvz 00000000000000000000000*0000
-	string failas = "2.txt";
+	int thread_count(0);
+	//INPUT ^^^^^^ ____________________________
+	ifstream rf(failas);
+
+
+
 	//_______________________^kintamieji^_____________v skaitymas v______________________________//
 
 
-	ifstream rf(failas);
+
 	rf >> pozicija;
 	pozicija;
 	rf >> juosta;
@@ -99,7 +137,7 @@ int main() {
 		eilute.push_back(komandos());
 		rf >> eilute[i].esamas_simb >> eilute[i].naujas_simb >> eilute[i].kryptis >> eilute[i].nauja_busena;
 		eilute[i].busena = a;
-		i++;	
+		i++;
 	}
 	for (i = 0; i < eilute.size() - 1; i++)
 	{
@@ -129,13 +167,13 @@ int main() {
 		past_busena = eilute[i].busena;
 		busenos_vieta++;
 	}
-	
-	for (i = 0; i < eilute.size()-1; i++)
+
+	for (i = 0; i < eilute.size() - 1; i++)
 	{
-		if(eilute[i].pradzia_busenos!=eilute[i+1].pradzia_busenos)
+		if (eilute[i].pradzia_busenos != eilute[i + 1].pradzia_busenos)
 		{
-			eilute[i].galas_busenos = eilute[i + 1].pradzia_busenos-1; 
-			int j = i-1;
+			eilute[i].galas_busenos = eilute[i + 1].pradzia_busenos - 1;
+			int j = i - 1;
 			while (eilute[j].galas_busenos == 0)
 			{
 				eilute[j].galas_busenos = eilute[i].galas_busenos;
@@ -154,90 +192,130 @@ int main() {
 		zymejimas += "_";
 	zymejimas[pozicija] = '^';
 
-
-	print(i, zymejimas, juosta, failas, pozicija);
+	print(i, zymejimas, juosta, failas, pozicija, spausdint_x, spausdint_y);
 
 
 	//_______________Vykdymas__________________________//
 	i = 0;
 
 
-	while (eilute[i].nauja_busena != "X")
+	while (eilute[i].nauja_busena != "X" && juosta!="end_of_tape")
 	{
 		int nauja_busena = stoi(eilute[i].nauja_busena);
 		if (eilute[i].esamas_simb == juosta[pozicija]) //Kai esamas simbolis sutampa su juosteles simboliu
 		{
 			if (eilute[i].esamas_simb != eilute[i].naujas_simb)  //Kai esamas simbolis nesutampa su nauju
 			{
-				juosta[pozicija] = eilute[i].naujas_simb;			
+				juosta[pozicija] = eilute[i].naujas_simb;
 				judejimas(eilute[i].kryptis, juosta, zymejimas, pozicija);
-				if (pozicija < 0 || pozicija >= juosta.length())
-				{
-					cout << "Juosta baigesi//End of tape" << endl;
-					return 0;
-				}
-				print(i, zymejimas, juosta, failas, pozicija);
-				struct_print(eilute[i]);
+				if(juosta!="end_of_tape")
+				print(i, zymejimas, juosta, failas, pozicija, spausdint_x, spausdint_y);
+				//struct_print(eilute[i]);
 				if (eilute[i].busena != nauja_busena)    //Kai yra nauja busena
-						{
-							for (int j = 0; j < eilute.size(); j++)
-							{
-								if (eilute[j].busena == nauja_busena)
-									i = eilute[j].pradzia_busenos;
-							}
-						}
+				{
+					for (int j = 0; j < eilute.size(); j++)
+					{
+						if (eilute[j].busena == nauja_busena)
+							i = eilute[j].pradzia_busenos;
+					}
+				}
 			}
 
 			else  //Kai esamas simbolis sutampa su nauju
 			{
-			judejimas(eilute[i].kryptis, juosta, zymejimas, pozicija);
-			if (pozicija < 0 || pozicija >= juosta.length())
-			{
-				cout << "Juosta baigesi//End of tape" << endl;
-				return 0;
-			}
-			if (eilute[i].busena != nauja_busena)
-			{
-				for (int j = 0; j < eilute.size(); j++)
+				judejimas(eilute[i].kryptis, juosta, zymejimas, pozicija);
+				if (eilute[i].busena != nauja_busena)
 				{
-					if (eilute[j].busena == nauja_busena)
-						i = eilute[j].pradzia_busenos;
+					for (int j = 0; j < eilute.size(); j++)
+					{
+						if (eilute[j].busena == nauja_busena)
+							i = eilute[j].pradzia_busenos;
+					}
 				}
 			}
-			}	
 		}
 		else if (eilute[i].esamas_simb != juosta[pozicija]) //Kai esamas simbolis nesutampa su juosteles simboliu
+		{
+			if (eilute[i].galas_busenos == i)
 			{
-				if (eilute[i].galas_busenos == i)
-					{
-						i = eilute[i].pradzia_busenos;
-					}
-				else {
-					i++;
-					cout << "iesko" << endl;
-				}
+				i = eilute[i].pradzia_busenos;
 			}
+			else{
+				i++;
+				//cout << "iesko" << endl;
+			}
+		}
 		//__________________vvv___Print___vvv________________________________________//
-		print(i, zymejimas, juosta, failas, pozicija);
-		struct_print(eilute[i]);
+		//barrier.wait();
+		if (juosta == "end_of_tape")
+		{
+			spausdint_y += 4;
+		}
+		print(i, zymejimas, juosta, failas, pozicija, spausdint_x, spausdint_y);
+
+		//struct_print(eilute[i]);
 	}
-	
-	//_____________________________________________________________________________//
-	for (i = 0; i < eilute.size(); i++)
+}
+
+int main() {
+	//https://stackoverflow.com/questions/18238747/c-holding-a-number-of-threads
+	//https://www.youtube.com/watch?v=n5Pst7CY2vo
+	//https://stackoverflow.com/questions/34842526/update-console-without-flickering-c  --> update console without flickering
+	SetConsoleDisplayMode(GetStdHandle(STD_OUTPUT_HANDLE), CONSOLE_FULLSCREEN_MODE, 0);
+	srand(time(NULL));
+	int thread_count;
+	int spausdint_y = 5;
+	int spausdint_x = 0;
+	cout << "alt+f4 to exit" << endl;
+	cout << "Max 10 threads stable" << endl;
+	cout << "How many threads: ";
+	cin >> thread_count;
+	cout << endl;
+	int get_file(0);
+	string failas[100];
+	vector<thread> thread_boy;
+	for (int j = 0; j < thread_count; j++)
 	{
-		struct_print(eilute[i]);
+		cout << "Enter >0 for random file; 0 to enter your file name" << endl;
+				cin >> get_file;
+				if (get_file)
+				{
+					failas[j] = random_file();
+				}
+				else
+				{
+					string name;
+					cout << "Enter your file (1.txt)" << endl;
+					cin >> name;
+					failas[j] = name;
+				}
+				ifstream rf(failas[j]);
+				if (rf.fail()) {
+					//File does not exist code here
+					cout << "File does not exist. Wait to restart." << endl;
+					sleep_for(2s);
+					system("cls");
+					main();
+				}
 	}
-	cout << "Busenos pradziu koord: "<<endl;
-	for (i = 0; i < eilute.size(); i++)
+	system("cls");
+
+	for (int j = 0; j < thread_count; j++)
 	{
-		cout << eilute[i].pradzia_busenos << ", ";
+		thread_boy.push_back(thread(vykdymas, failas[j], spausdint_x, spausdint_y));
+		spausdint_y += 10;
+		if (j == 4) {
+			spausdint_x += 100;
+			spausdint_y = 5;
+		}
+		//sleep_for(0.5s);
 	}
-	cout << "Busenos galu koord: "<<endl;
-	for (i = 0; i < eilute.size(); i++)
+	for (auto j = thread_boy.begin(); j != thread_boy.end(); ++j)
 	{
-		cout << eilute[i].galas_busenos << ", ";
+		
+		//cout << endl << endl << endl << endl << endl << endl << endl << endl << endl;
+		j->join();
 	}
-	//main(); grizta atgal programa i pradzia
 }
 /*
 00000000000000000000000*0000
@@ -247,15 +325,4 @@ int main() {
 1 0 1 R 0
 1 1 0 L 1*/
 
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
 
