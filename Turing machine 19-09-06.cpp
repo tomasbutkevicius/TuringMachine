@@ -12,7 +12,6 @@
 #include <algorithm>
 #include <condition_variable>
 #include <mutex> //lock() unlock()
-#include <future>
 #include "judejimas.h"
 using namespace std;
 using namespace std::this_thread;     // sleep_for, sleep_until
@@ -93,7 +92,7 @@ void print(int i, string zymejimas, string juosta, string failas, int pozicija, 
 	m.lock();
 	setCursorPosition(0, spausdint_y);
 	if (juosta == "end_of_tape")
-		cout << juosta;
+		cout << "";
 	else {
 		setCursorPosition(spausdint_x, spausdint_y -1);
 		cout << failas << endl;
@@ -101,13 +100,9 @@ void print(int i, string zymejimas, string juosta, string failas, int pozicija, 
 		cout << juosta <<endl;
 		setCursorPosition(spausdint_x, spausdint_y+1);
 		cout << zymejimas <<endl;
-		//cout.sync_with_stdio();
-		//cout << "Failas:" << failas << endl;
-		//cout << "pozicija: " << pozicija << " " << juosta[pozicija] << endl;
-		//cout << "komanda: " << i << endl;
 	}
 	m.unlock();
-	sleep_for(0.05s);
+	sleep_for(0.01s);
 }
 void vykdymas(string failas, int spausdint_x, int spausdint_y) {
 	
@@ -193,12 +188,8 @@ void vykdymas(string failas, int spausdint_x, int spausdint_y) {
 	zymejimas[pozicija] = '^';
 
 	print(i, zymejimas, juosta, failas, pozicija, spausdint_x, spausdint_y);
-
-
 	//_______________Vykdymas__________________________//
 	i = 0;
-
-
 	while (eilute[i].nauja_busena != "X" && juosta!="end_of_tape")
 	{
 		int nauja_busena = stoi(eilute[i].nauja_busena);
@@ -246,14 +237,11 @@ void vykdymas(string failas, int spausdint_x, int spausdint_y) {
 			}
 		}
 		//__________________vvv___Print___vvv________________________________________//
-		//barrier.wait();
 		if (juosta == "end_of_tape")
 		{
 			spausdint_y += 4;
 		}
 		print(i, zymejimas, juosta, failas, pozicija, spausdint_x, spausdint_y);
-
-		//struct_print(eilute[i]);
 	}
 }
 
@@ -312,17 +300,9 @@ int main() {
 	}
 	for (auto j = thread_boy.begin(); j != thread_boy.end(); ++j)
 	{
-		
-		//cout << endl << endl << endl << endl << endl << endl << endl << endl << endl;
 		j->join();
 	}
+	main();
 }
-/*
-00000000000000000000000*0000
-0 0 0 R 0
-0 1 1 R 0
-0 * *L 1
-1 0 1 R 0
-1 1 0 L 1*/
 
 
